@@ -1,13 +1,16 @@
 # Engine
 
-A tiny little PHP web framework wrote over a Bank Holiday weekend.
+A tiny little PHP web framework written over a Bank Holiday weekend.
 
 **Current version:** Unreleased  
 **Supported PHP versions:** 7.1
 
+## Usage
+
+A controller:
+
 ```php
-use Monolog\Logger;
-use Engine\{Controller, Router};
+use Engine\Controller;
 
 /* Controllers are just plain classes that will be instantiated with a Request, Response and logger. */
 final class HomepageController extends Controller
@@ -29,6 +32,13 @@ final class HomepageController extends Controller
         $this->response->redirect('http://www.example.com');
     }
 }
+```
+
+A top-level `boot.php` script:
+
+```php
+use Monolog\Logger;
+use Engine\{Router, Request, Response};
 
 $logger = new Logger('foo');
 
@@ -46,6 +56,12 @@ $request = new Request($_GET, $_POST, $_COOKIE, $_SESSION, $_SERVER);
 $loader = new \Twig_Loader_Filesystem(__DIR__ . '/templates');
 $twig = new \Twig_Environment($loader);
 $response = new Response($twig, $logger);
+```
+
+The public `index.php` entrypoint:
+
+```php
+require_once __DIR__ . '/../boot.php';
 
 /* Actually route the incoming request. */
 $router->route($request, $response);

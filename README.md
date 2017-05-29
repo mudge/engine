@@ -2,6 +2,9 @@
 
 A tiny little PHP web framework wrote over a Bank Holiday weekend.
 
+**Current version:** Unreleased  
+**Supported PHP versions:** 7.1
+
 ```php
 use Monolog\Logger;
 use Engine\{Controller, Router};
@@ -11,8 +14,19 @@ final class HomepageController extends Controller
 {
     public function index(): void
     {
+        /* Prevent CSRF attacks using tokens in form submissions. */
+        $this->verifyCsrfToken();
+
+        /* Query arguments or post data can be accessed through Parameters */
+        $this->params()->fetch('name');
+
         /* The response object can be used to render templates and send them to the user. */
         $this->response->render('index.html');
+
+        /* Use convenience methods for common responses. */
+        $this->response->notFound();
+        $this->response->forbidden();
+        $this->response->redirect('http://www.example.com');
     }
 }
 

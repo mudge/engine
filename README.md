@@ -1,4 +1,4 @@
-# Engine
+# Engine [![Build Status](https://travis-ci.org/mudge/engine.svg?branch=master)](https://travis-ci.org/mudge/engine)
 
 A tiny little PHP web framework written over a Bank Holiday weekend.
 

@@ -14,10 +14,15 @@ final class Parameters
 
     public function fetch(string $key, $default = ''): string
     {
-        if (array_key_exists($key, $this->params)) {
+        if ($this->exist($key)) {
             return $this->params[$key];
         } else {
             return $default;
         }
+    }
+
+    public function exist(string $key): bool
+    {
+        return array_key_exists($key, $this->params);
     }
 }

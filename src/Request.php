@@ -20,11 +20,6 @@ final class Request
         $this->server = $server;
     }
 
-    public function isPost(): bool
-    {
-        return $this->method() === 'POST';
-    }
-
     public function method(): string
     {
         return $this->server['REQUEST_METHOD'];

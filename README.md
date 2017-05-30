@@ -11,11 +11,12 @@ With the following directory layout (`vendor` directory not shown):
 
 ```
 .
-├── boot.php
 ├── src
 │   └── HomepageController.php
 └── public
-    └── index.php
+│   └── index.php
+└── templates
+    └── index.html
 ```
 
 A controller, `src/HomepageController.php` in a [PSR-4 namespace](http://www.php-fig.org/psr/psr-4/) `MyApplication`:
@@ -40,7 +41,7 @@ final class HomepageController extends Controller
         $this->params()->fetch('name');
 
         /* The response object can be used to render templates and send them to the user. */
-        $this->response->render('index.html');
+        $this->response->render('index.html', ['csrf_token' => $this->session->crsfToken()]);
 
         /* Use convenience methods for common responses. */
         $this->response->notFound();
@@ -50,45 +51,38 @@ final class HomepageController extends Controller
 }
 ```
 
-A top-level `boot.php` script:
-
-```php
-<?php
-declare(strict_types=1);
-
-require_once __DIR__ . '/vendor/autoload.php';
-
-use Monolog\Logger;
-use Engine\{Router, Request, Response};
-
-$logger = new Logger('myapplication');
-
-/* The router is the heart of Engine, mapping incoming requests by method and path to controller actions. */
-$router = new Router($logger);
-$router->get('', 'MyApplication\HomepageController', 'index');
-
-session_name('myapplication');
-session_start();
-
-/* Request objects wrap up PHP's various superglobals. */
-$request = new Request($_GET, $_POST, $_COOKIE, $_SESSION, $_SERVER);
-
-/* Response objects provide conveniences for sending headers and response bodies to the user. */
-$loader = new \Twig_Loader_Filesystem(__DIR__ . '/templates');
-$twig = new \Twig_Environment($loader);
-$response = new Response($twig, $logger);
-```
-
 The public `public/index.php` entrypoint:
 
 ```php
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../boot.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-/* Actually route the incoming request. */
-$router->route($request, $response);
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Engine\Application;
+
+$stream = new StreamHandler('php://stderr', Logger::DEBUG);
+$logger = new Logger('myapplication');
+$logger->pushHandler($stream);
+
+$loader = new \Twig_Loader_Filesystem(__DIR__ . '/../templates');
+$twig = new \Twig_Environment($loader);
+
+$application = new Application('myapplication', $twig, $logger);
+
+/* The router is the heart of Engine, mapping incoming requests by method and path to controller actions. */
+$application->router->get('', 'MyApplication\HomepageController', 'index');
+
+/* Request objects wrap up PHP's various superglobals. */
+$request = $application->request();
+
+/* Response objects provide conveniences for sending headers and response bodies to the user. */
+$response = $application->response();
+
+/* Actually serve the incoming request. */
+$application->run($request, $response);
 ```
 
 ## Why "Engine?"

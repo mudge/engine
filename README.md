@@ -37,11 +37,14 @@ final class HomepageController extends Controller
         /* Prevent CSRF attacks using tokens in form submissions. */
         $this->verifyCsrfToken();
 
-        /* Query arguments or post data can be accessed through Parameters */
+        /* Query arguments or post data can be accessed through Parameters. */
         $this->params()->fetch('name');
 
         /* The response object can be used to render templates and send them to the user. */
         $this->response->render('index.html', ['csrf_token' => $this->session->crsfToken()]);
+
+        /* Or, use the convenience methods on the controller itself. */
+        $this->renderForm('index.html');
 
         /* Use convenience methods for common responses. */
         $this->response->notFound();
@@ -73,7 +76,9 @@ $twig = new \Twig_Environment($loader);
 $application = new Application('myapplication', $twig, $logger);
 
 /* The router is the heart of Engine, mapping incoming requests by method and path to controller actions. */
-$application->router->get('', 'MyApplication\HomepageController', 'index');
+$application->router->root('MyApplication\HomepageController', 'index');
+$application->router->get('/foo', 'MyApplication\HomepageController', 'foo');
+$application->router->post('/bar', 'MyApplication\HomepageController', 'bar');
 
 /* Request objects wrap up PHP's various superglobals. */
 $request = $application->request();
@@ -82,7 +87,7 @@ $request = $application->request();
 $response = $application->response();
 
 /* Actually serve the incoming request. */
-$application->run($request, $response);
+$application->router->route($request, $response);
 ```
 
 ## Why "Engine?"

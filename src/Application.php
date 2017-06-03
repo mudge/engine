@@ -38,9 +38,4 @@ final class Application
     {
         return new Response($this->twig, $this->logger);
     }
-
-    public function run(Request $request, Response $response): void
-    {
-        $this->router->route($request, $response);
-    }
 }

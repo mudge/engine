@@ -11,8 +11,29 @@ abstract class Controller
     {
         $this->request = $request;
         $this->response = $response;
-        $this->session = $request->session();
         $this->logger = $logger;
+
+        $this->session = $request->session();
+    }
+
+    public function renderForm(string $template, array $variables = []): void
+    {
+        $this->render($template, array_merge($variables, ['csrf_token' => $this->csrfToken()]));
+    }
+
+    public function render(string $template, array $variables = []): void
+    {
+        $this->response->render($template, $variables);
+    }
+
+    public function redirect(string $location): void
+    {
+        $this->response->redirect($location);
+    }
+
+    public function csrfToken(): string
+    {
+        return $this->session->csrfToken();
     }
 
     public function verifyCsrfToken(): void

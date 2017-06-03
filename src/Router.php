@@ -18,7 +18,7 @@ final class Router
 
     public function root(string $controllerClass, string $action): void
     {
-        $this->get('', $controllerClass, $action);
+        $this->get('/', $controllerClass, $action);
     }
 
     public function get(string $path, string $controllerClass, string $action): void
@@ -40,7 +40,7 @@ final class Router
     public function route(Request $request, Response $response): void
     {
         $method = $request->method();
-        $pathInfo = $request->pathInfo();
+        $pathInfo = explode('?', $request->requestUri(), 2)[0];
         $this->logger->debug("Looking for matching route for {$method} {$pathInfo}");
 
         if (empty($this->routes[$method][$pathInfo])) {

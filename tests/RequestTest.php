@@ -53,11 +53,18 @@ final class RequestTest extends TestCase
         $this->assertEquals('/index.html', $request->requestUri());
     }
 
-    public function testPathInfoReturnsPathInfo(): void
+    public function testRequestPathReturnsRequestUri(): void
     {
-        $request = $this->request(['server' => ['PATH_INFO' => '/foo/bar']]);
+        $request = $this->request(['server' => ['REQUEST_URI' => '/foobar']]);
 
-        $this->assertEquals('/foo/bar', $request->pathInfo());
+        $this->assertEquals('/foobar', $request->requestPath());
+    }
+
+    public function testRequestPathReturnsPathWithoutQueryString(): void
+    {
+        $request = $this->request(['server' => ['REQUEST_URI' => '/foobar?baz=quux']]);
+
+        $this->assertEquals('/foobar', $request->requestPath());
     }
 
     public function testSessionReturnsSessionVariables(): void
@@ -84,34 +91,6 @@ final class RequestTest extends TestCase
         $request->cookies()['foo'] = 'bar';
 
         $this->assertEquals(['foo' => 'bar'], $cookies);
-    }
-
-    public function testScriptNameReturnsScriptName(): void
-    {
-        $request = $this->request(['server' => ['SCRIPT_NAME' => 'index.php']]);
-
-        $this->assertEquals('index.php', $request->scriptName());
-    }
-
-    public function testPathReturnsScriptNameAndPathInfo(): void
-    {
-        $request = $this->request(['server' => ['SCRIPT_NAME' => 'index.php', 'PATH_INFO' => '/foo']]);
-
-        $this->assertEquals('index.php/foo', $request->path());
-    }
-
-    public function testPathInfoIsAnEmptyStringWhenMissing(): void
-    {
-        $request = $this->request();
-
-        $this->assertEquals('', $request->pathInfo());
-    }
-
-    public function testScriptNameIsAnEmptyStringWhenMissing(): void
-    {
-        $request = $this->request();
-
-        $this->assertEquals('', $request->scriptName());
     }
 
     private function request(array $arguments = []): Request

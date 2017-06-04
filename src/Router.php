@@ -40,19 +40,24 @@ final class Router
     public function route(Request $request, Response $response): void
     {
         $method = $request->method();
-        $pathInfo = explode('?', $request->requestUri(), 2)[0];
-        $this->logger->debug("Looking for matching route for {$method} {$pathInfo}");
+        $path = $request->requestPath();
+        $this->logger->debug("Looking for matching route for {$method} {$path}");
 
-        if (empty($this->routes[$method][$pathInfo])) {
-            $this->logger->warning("Route not found for {$method} {$pathInfo}");
+        if (empty($this->routes[$method][$path])) {
+            $this->logger->warning("Route not found for {$method} {$path}");
             $response->notFound();
             return;
         }
 
-        list($controllerClass, $action) = $this->routes[$method][$pathInfo];
-        $this->logger->debug("Route found for {$method} {$pathInfo}: {$controllerClass}#{$action}");
+        list($controllerClass, $action) = $this->routes[$method][$path];
+        $this->logger->debug("Route found for {$method} {$path}: {$controllerClass}#{$action}");
 
         $controller = new $controllerClass($request, $response, $this->logger);
-        $controller->$action();
+
+        try {
+            $controller->$action();
+        } catch (HaltingResponseException $e) {
+            $this->logger->warning("Response halted due to exception: {$e}");
+        }
     }
 }

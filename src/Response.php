@@ -39,7 +39,7 @@ final class Response
     {
         $this->sendHeaders();
 
-        $this->logger->info("Rendering template {$template}");
+        $this->logger->debug("Rendering template {$template}");
         echo $this->twig->render($template, $variables);
     }
 

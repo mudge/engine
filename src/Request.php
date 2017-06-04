@@ -22,27 +22,17 @@ final class Request
 
     public function method(): string
     {
-        return $this->server['REQUEST_METHOD'];
+        return $this->server['REQUEST_METHOD'] ?? '';
+    }
+
+    public function requestPath(): string
+    {
+        return explode('?', $this->requestUri(), 2)[0];
     }
 
     public function requestUri(): string
     {
-        return $this->server['REQUEST_URI'];
-    }
-
-    public function path(): string
-    {
-        return "{$this->scriptName()}{$this->pathInfo()}";
-    }
-
-    public function scriptName(): string
-    {
-        return $this->server['SCRIPT_NAME'] ?? '';
-    }
-
-    public function pathInfo(): string
-    {
-        return $this->server['PATH_INFO'] ?? '';
+        return $this->server['REQUEST_URI'] ?? '';
     }
 
     public function params(): Parameters

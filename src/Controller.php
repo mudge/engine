@@ -36,17 +36,17 @@ abstract class Controller
         return $this->session->csrfToken();
     }
 
-    public function verifyCsrfToken(): bool
+    public function verifyCsrfToken(): void
     {
         $csrfToken = $this->request->params()->fetch('csrf_token');
         if ($this->session->verifyCsrfToken($csrfToken)) {
-            return true;
+            return;
         }
 
         $this->logger->warning("Invalid CSRF token: {$csrfToken}");
         $this->session->reset();
         $this->response->forbidden();
 
-        return false;
+        throw new HaltingResponseException('Response halted due to invalid CSRF token');
     }
 }

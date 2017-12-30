@@ -40,9 +40,9 @@ final class Request
         return new Parameters(array_merge($this->get, $this->post));
     }
 
-    public function &cookies(): array
+    public function cookies(): Cookies
     {
-        return $this->cookies;
+        return new Cookies($this->cookies);
     }
 
     public function session(): Session

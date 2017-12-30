@@ -42,8 +42,9 @@ final class RequestTest extends TestCase
     public function testCookiesReturnsCookieVariables(): void
     {
         $request = $this->request(['cookies' => ['user_id' => '123']]);
+        $cookies = $request->cookies();
 
-        $this->assertEquals(['user_id' => 123], $request->cookies());
+        $this->assertEquals(123, $cookies->fetch('user_id'));
     }
 
     public function testRequestUriReturnsUri(): void
@@ -82,15 +83,6 @@ final class RequestTest extends TestCase
         $request->session()->set('foo', 'bar');
 
         $this->assertEquals(['foo' => 'bar'], $session);
-    }
-
-    public function testEditingCookiesEditsOriginal(): void
-    {
-        $cookies = [];
-        $request = $this->request(['cookies' => &$cookies]);
-        $request->cookies()['foo'] = 'bar';
-
-        $this->assertEquals(['foo' => 'bar'], $cookies);
     }
 
     private function request(array $arguments = []): Request

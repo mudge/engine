@@ -1,9 +1,19 @@
 {
     "name": "mudge/engine",
+    "description": "A tiny little PHP web framework written over a Bank Holiday weekend.",
+    "homepage": "https://github.com/mudge/engine",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Paul Mucur",
+            "homepage": "https://mudge.name"
+        }
+    ],
     "require-dev": {
         "phpunit/phpunit": "^6.1"
     },
     "require": {
+        "php": ">= 7.1.0",
         "psr/log": "^1.0",
         "twig/twig": "^2.3"
     },

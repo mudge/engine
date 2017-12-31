@@ -100,7 +100,7 @@ final class HomepageController extends Controller
         $this->verifyCsrfToken();
 
         /* Query arguments or post data can be accessed through Parameters. */
-        $this->params()->fetch('name');
+        $this->params->fetch('name');
 
         /* The response object can be used to render templates and send them to the user. */
         $this->response->render('index.html', ['csrf_token' => $this->session->crsfToken()]);

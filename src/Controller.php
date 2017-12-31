@@ -14,6 +14,7 @@ abstract class Controller
         $this->logger = $logger;
 
         $this->session = $request->session();
+        $this->params = $request->params();
     }
 
     public function renderForm(string $template, array $variables = []): void
@@ -38,7 +39,7 @@ abstract class Controller
 
     public function verifyCsrfToken(): void
     {
-        $csrfToken = $this->request->params()->fetch('csrf_token');
+        $csrfToken = $this->params->fetch('csrf_token');
         if ($this->session->verifyCsrfToken($csrfToken)) {
             return;
         }

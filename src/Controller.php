@@ -15,6 +15,7 @@ abstract class Controller
 
         $this->session = $request->session();
         $this->params = $request->params();
+        $this->cookies = $request->cookies();
     }
 
     public function renderForm(string $template, array $variables = []): void

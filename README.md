@@ -71,7 +71,7 @@ As for how controllers are instantiated and actions called: the `Router` is resp
 +-------------+     +---------------------------+
 ```
 
-It is the user's responsibility to create a `Router` instance, populate it with routes (using helpers such as `get`, `post`, `root`) and then call `route` with a `Request` and `Response`. The `Application` object helps with this by providing helpers for creating `Request` and `Response` objects from PHP's various superglobals and by initializing an empty `Router` by default (see [Usage](#usage) for more information).
+It is the user's responsibility to create a `Router` instance, populate it with routes (using helpers such as `get`, `post`, `root`) and then call `route` with a `Request` and `Response`.
 
 ## Usage
 
@@ -87,13 +87,13 @@ With the following directory layout (`vendor` directory not shown):
     └── index.html
 ```
 
-A controller, `src/HomepageController.php` in a [PSR-4 namespace](http://www.php-fig.org/psr/psr-4/) `MyApplication`:
+A controller, `src/HomepageController.php` in a [PSR-4 namespace](http://www.php-fig.org/psr/psr-4/) `App`:
 
 ```php
 <?php
 declare(strict_types=1);
 
-namespace MyApplication;
+namespace App;
 
 use Engine\Controller;
 
@@ -128,34 +128,56 @@ The public `public/index.php` entrypoint:
 <?php
 declare(strict_types=1);
 
+/**
+ * Ensure all encoding is in UTF-8.
+ */
+mb_internal_encoding('UTF-8');
+mb_http_output('UTF-8');
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Engine\Application;
+use Engine\{Router, Request, Response};
 
-$stream = new StreamHandler('php://stderr', Logger::DEBUG);
-$logger = new Logger('myapplication');
-$logger->pushHandler($stream);
+/**
+ * Set up logging.
+ *
+ * By default, this will log INFO-level messages to ../log/app.log
+ */
+$logger = new Logger('app');
+$logger->pushHandler(new StreamHandler(__DIR__ . '/../log/app.log', Logger::INFO));
 
+/**
+ * Set up templating.
+ *
+ * By default, this will load templates from ../templates and cache them
+ * to ../tmp (you may want to disable the cache during development)
+ */
 $loader = new \Twig_Loader_Filesystem(__DIR__ . '/../templates');
-$twig = new \Twig_Environment($loader);
+$twig = new \Twig_Environment($loader, ['cache' => __DIR__ . '/../tmp']);
 
-$application = new Application('myapplication', $twig, $logger);
+/**
+ * Set up the request and response.
+ */
+$request = Request::fromGlobals();
+$response = new Response($twig, $logger);
 
-/* The router is the heart of Engine, mapping incoming requests by method and path to controller actions. */
-$application->router->root('MyApplication\HomepageController', 'index');
-$application->router->get('/foo', 'MyApplication\HomepageController', 'foo');
-$application->router->post('/bar', 'MyApplication\HomepageController', 'bar');
+/**
+ * Set up the router.
+ *
+ * Add any routes of your own here, e.g.
+ *
+ *     $router->get('/login', 'App\SessionsController', 'new');
+ *     $router->post('/login', 'App\SessionsController', 'create');
+ */
+$router = new Router($logger);
+$router->root('App\HomepageController', 'index');
 
-/* Request objects wrap up PHP's various superglobals. */
-$request = $application->request();
-
-/* Response objects provide conveniences for sending headers and response bodies to the user. */
-$response = $application->response();
-
-/* Actually serve the incoming request. */
-$application->router->route($request, $response);
+/**
+ * Serve the request with the response.
+ */
+$router->route($request, $response);
 ```
 
 ## Why "Engine?"

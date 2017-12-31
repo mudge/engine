@@ -11,6 +11,19 @@ final class Request
     private $session;
     private $server;
 
+    public static function fromGlobals(): self
+    {
+        session_start();
+
+        return new self(
+            $_GET,
+            $_POST,
+            $_COOKIE,
+            $_SESSION,
+            $_SERVER
+        );
+    }
+
     public function __construct(array $get, array $post, array &$cookies, array &$session, array $server)
     {
         $this->get = $get;

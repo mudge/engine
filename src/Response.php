@@ -22,7 +22,8 @@ final class Response
     public function forbidden(): void
     {
         $this->header('HTTP/1.0 403 Forbidden');
-        $this->render('403.html'); }
+        $this->render('403.html');
+    }
 
     public function methodNotAllowed(): void
     {

@@ -8,7 +8,9 @@ A tiny little PHP web framework written over a Bank Holiday weekend.
 ## Installation
 
 ```console
-$ composer require mudge/engine:dev-master
+$ composer create-project mudge/engine-skeleton:dev-master my-project
+$ cd my-project
+$ php -S localhost:8080 -t public
 ```
 
 ## Design
@@ -71,23 +73,50 @@ As for how controllers are instantiated and actions called: the `Router` is resp
 +-------------+     +---------------------------+
 ```
 
-It is the user's responsibility to create a `Router` instance, populate it with routes (using helpers such as `get`, `post`, `root`) and then call `route` with a `Request` and `Response`.
+The [Engine Skeleton](https://github.com/mudge/engine-skeleton) project will create a `public/index.php` which sets up a new `Router`, populates it with a default route, creates a `Request` and empty `Response` and routes it accordingly.
 
 ## Usage
 
-With the following directory layout (`vendor` directory not shown):
+Use [Engine Skeleton](https://github.com/mudge/engine-skeleton) to create a new Engine web application:
+
+```console
+$ composer create-project mudge/engine-skeleton:dev-master my-project
+```
+
+This will generate a project with the following layout in `my-project` (contents of `vendor` directory not shown):
 
 ```
 .
+├── README.md
+├── composer.json
+├── composer.lock
+├── log
+├── public
+│   ├── css
+│   │   └── app.css
+│   └── index.php
 ├── src
 │   └── HomepageController.php
-└── public
-│   └── index.php
-└── templates
-    └── index.html
+├── templates
+│   ├── 404.html
+│   ├── base.html
+│   └── index.html
+├── tmp
+└── vendor
 ```
 
-A controller, `src/HomepageController.php` in a [PSR-4 namespace](http://www.php-fig.org/psr/psr-4/) `App`:
+You can then start the development server:
+
+```console
+$ cd my-project
+$ php -S localhost:8080 -t public
+```
+
+You can then go to http://localhost:8080 in your web browser and see a welcome page from Engine.
+
+### Controllers
+
+By default, your project will expect everything from your `src` directory to be in the `App` namespace. You can implement your own controllers by inheriting from `Engine\Controller`:
 
 ```php
 <?php
@@ -122,7 +151,11 @@ final class HomepageController extends Controller
 }
 ```
 
-The public `public/index.php` entrypoint:
+### Routing
+
+The main entrypoint into your web application is `public/index.php` which is executed on every request. This will have been generated for you by the project skeleton but can be edited as you see fit.
+
+You will almost certainly want to edit your routes to route requests to your own controller actions but you can also configure logging and template caching here too.
 
 ```php
 <?php

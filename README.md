@@ -5,6 +5,12 @@ A tiny little PHP web framework written over a Bank Holiday weekend.
 **Current version:** Unreleased  
 **Supported PHP versions:** 7.1, 7.2
 
+## Installation
+
+```console
+$ composer require mudge/engine:dev-master
+```
+
 ## Design
 
 It is tempting to think of the HTTP request response cycle as a pure function `f` that accepts some request (perhaps as a raw HTTP string or as some wrapper object) and produces a single response (again, perhaps as a raw string or a wrapper object):

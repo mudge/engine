@@ -3,7 +3,69 @@
 A tiny little PHP web framework written over a Bank Holiday weekend.
 
 **Current version:** Unreleased  
-**Supported PHP versions:** 7.1
+**Supported PHP versions:** 7.1, 7.2
+
+## Design
+
+It is tempting to think of the HTTP request response cycle as a pure function `f` that accepts some request (perhaps as a raw HTTP string or as some wrapper object) and produces a single response (again, perhaps as a raw string or a wrapper object):
+
+```
++-------------------+     +---+     +----------------------------------------+
+| GET / HTTP/2      | --> | f | --> | HTTP/2 200                             |
+| Host: example.com |     +---+     | Content-Type: text/html; charset=utf-8 |
++-------------------+               |                                        |
+       Request                      | <!DOCTYPE html>...                     |
+                                    +----------------------------------------+
+                                                     Response
+```
+
+However, this mental model isn't quite right as it's not true that all requests produce a single response all in one go. For example, it is possible for a response to be sent in chunks: perhaps a request immediately receives some headers in response before the body is returned in parts. It's also possible for a response to never end by continuously streaming (e.g. think of the Twitter streaming APIs).
+
+Therefore, Engine takes an alternative approach: modelling the typical request response cycle as a function that takes _both_ a request and a response object, the latter of which is a sort of open file handle allowing the user to send headers, etc. at any point during processing. This means that responses are created purely through side-effects which is a messier way of thinking about it but maps more closely to reality.
+
+```
++-------------------+     +---+
+| GET / HTTP/2      | --> |   |
+| Host: example.com |     |   |
++-------------------+     |   |
+       Request            | f |
+                          |   |
++-------------------+     |   |
+|                   | --> |   |
++-------------------+     +---+
+       Response
+```
+
+Engine uses the [Model-view-controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern but controllers are objects that are initialized with a `Request`, `Response` and a logger.
+
+The `Request` is a value object offering access to the request URI, method, any `GET` or `POST` parameters and any cookies or session data.
+
+The `Response` object allows you to send data in response to the request via various methods:
+
+* `redirect(string $location): void`: send a redirect header;
+* `header(string $header): void`: send any arbitrary header;
+* `render(string $template, array $variables = []): void`: render a [Twig](https://twig.symfony.com/) template with the given variables;
+* `notFound(): void`: return a `404 Not Found` response with a template called `404.html`;
+* `forbidden(): void`: return a `403 Forbidden` response with a template called `403.html`;
+* `methodNotAllowed(): void`: return a `405 Method Not Allowed` response with a template called `405.html`.
+
+Note that all methods return `void` as they work purely through side-effects: namely, sending data to the client.
+
+Controller actions are therefore typical methods on the controller instance with access to the `request`, `response` and `logger` (see [Usage](#usage) for an example). As these are plain PHP objects, all the usual techniques such as composition and inheritance are available for sharing behaviour between controllers.
+
+As for how controllers are instantiated and actions called: the `Router` is responsible for this and contains a map of HTTP methods and paths to controller classes and actions, e.g.
+
+```
++-------------+     +----------------------+
+| GET /       | --> | HomeController#index |
++-------------+     +----------------------+
+
++-------------+     +---------------------------+
+| POST /login | --> | SessionsController#create |
++-------------+     +---------------------------+
+```
+
+It is the user's responsibility to create a `Router` instance, populate it with routes (using helpers such as `get`, `post`, `root`) and then call `route` with a `Request` and `Response`. The `Application` object helps with this by providing helpers for creating `Request` and `Response` objects from PHP's various superglobals and by initializing an empty `Router` by default (see [Usage](#usage) for more information).
 
 ## Usage
 

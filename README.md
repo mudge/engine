@@ -75,6 +75,20 @@ As for how controllers are instantiated and actions called: the `Router` is resp
 
 The [Engine Skeleton](https://github.com/mudge/engine-skeleton) project will create a `public/index.php` which sets up a new `Router`, populates it with a default route, creates a `Request` and empty `Response` and routes it accordingly.
 
+```
+            +-------------------+     +-----------------------------+     +------------------+
+            | GET / HTTP/2      | --> | GET / -> HomepageController | --> |                  |
+ __O__  --> | Host: example.com |     |          index              |     |      index       |
+   |        +-------------------+     +-----------------------------+     |                  |
+   |              Request                        Router                   |                  |
+   |                                                                      |                  |
+   |                                                       +--------+     |                  |
+   |    <------------------------------------------------- |        | --> |                  |
+  / \                                                      |        | <-- |                  |
+ Client                                                    +--------+     +------------------+
+                                                            Response       HomepageController
+```
+
 ## Usage
 
 Use [Engine Skeleton](https://github.com/mudge/engine-skeleton) to create a new Engine web application:

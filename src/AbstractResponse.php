@@ -3,14 +3,19 @@ declare(strict_types=1);
 
 namespace Engine;
 
-use Psr\Log\LoggerInterface;
+use Psr\Log\{LoggerInterface, NullLogger};
 
 abstract class AbstractResponse implements ResponseInterface
 {
-    public function __construct(\Twig_Environment $twig, LoggerInterface $logger)
+    public function __construct(\Twig_Environment $twig, LoggerInterface $logger = null)
     {
         $this->twig = $twig;
-        $this->logger = $logger;
+
+        if ($logger === null) {
+            $this->logger = new NullLogger();
+        } else {
+            $this->logger = $logger;
+        }
     }
 
     public function notFound(): void

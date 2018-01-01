@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Engine;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 
 final class TestResponseTest extends TestCase
 {
@@ -83,8 +82,7 @@ final class TestResponseTest extends TestCase
     private function buildResponse(): ResponseInterface
     {
         $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(__DIR__ . '/templates'));
-        $logger = new NullLogger();
 
-        return new TestResponse($twig, $logger);
+        return new TestResponse($twig);
     }
 }

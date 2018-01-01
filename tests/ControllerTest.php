@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Engine;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 
 final class ControllerTest extends TestCase
 {
@@ -12,8 +11,7 @@ final class ControllerTest extends TestCase
     {
         $request = $this->buildRequest(['csrf_token' => 'decafbad']);
         $response = $this->buildResponse();
-        $logger = new NullLogger();
-        $controller = new class($request, $response, $logger) extends Controller {
+        $controller = new class($request, $response) extends Controller {
             public function index(): void
             {
                 $this->renderForm('form.html');
@@ -28,8 +26,7 @@ final class ControllerTest extends TestCase
     {
         $request = $this->buildRequest();
         $response = $this->buildResponse();
-        $logger = new NullLogger();
-        $controller = new class($request, $response, $logger) extends Controller {
+        $controller = new class($request, $response) extends Controller {
             public function index(): void
             {
                 $this->render('index.html', ['planet' => 'Ilus']);
@@ -44,8 +41,7 @@ final class ControllerTest extends TestCase
     {
         $request = $this->buildRequest();
         $response = $this->buildResponse();
-        $logger = new NullLogger();
-        $controller = new class($request, $response, $logger) extends Controller {
+        $controller = new class($request, $response) extends Controller {
             public function index(): void
             {
                 $this->redirect('http://example.com');
@@ -60,8 +56,7 @@ final class ControllerTest extends TestCase
     {
         $request = $this->buildRequest();
         $response = $this->buildResponse();
-        $logger = new NullLogger();
-        $controller = new class($request, $response, $logger) extends Controller {
+        $controller = new class($request, $response) extends Controller {
             public function index(): void
             {
                 $this->header('HTTP/1.0 418 I\'m a teapot');
@@ -76,8 +71,7 @@ final class ControllerTest extends TestCase
     {
         $request = $this->buildRequest(['csrf_token' => 'decafbad']);
         $response = $this->buildResponse();
-        $logger = new NullLogger();
-        $controller = new class($request, $response, $logger) extends Controller {};
+        $controller = new class($request, $response) extends Controller {};
 
         $this->assertEquals('decafbad', $controller->csrfToken());
     }
@@ -86,8 +80,7 @@ final class ControllerTest extends TestCase
     {
         $request = $this->buildRequest(['csrf_token' => 'decafbad'], ['csrf_token' => 'decafbad']);
         $response = $this->buildResponse();
-        $logger = new NullLogger();
-        $controller = new class($request, $response, $logger) extends Controller {
+        $controller = new class($request, $response) extends Controller {
             public function index(): void
             {
                 $this->verifyCsrfToken();
@@ -104,8 +97,7 @@ final class ControllerTest extends TestCase
     {
         $request = $this->buildRequest(['csrf_token' => 'baaaaaad'], ['csrf_token' => 'decafbad']);
         $response = $this->buildResponse();
-        $logger = new NullLogger();
-        $controller = new class($request, $response, $logger) extends Controller {
+        $controller = new class($request, $response) extends Controller {
             public function index(): void
             {
                 $this->verifyCsrfToken();
@@ -126,8 +118,7 @@ final class ControllerTest extends TestCase
     private function buildResponse(): ResponseInterface
     {
         $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(__DIR__ . '/templates'));
-        $logger = new NullLogger();
 
-        return new TestResponse($twig, $logger);
+        return new TestResponse($twig);
     }
 }

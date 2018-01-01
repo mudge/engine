@@ -3,17 +3,22 @@ declare(strict_types=1);
 
 namespace Engine;
 
-use Psr\Log\LoggerInterface;
+use Psr\Log\{LoggerInterface, NullLogger};
 
 final class Router
 {
     private $routes;
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger = null)
     {
         $this->routes = [];
-        $this->logger = $logger;
+
+        if ($logger === null) {
+            $this->logger = new NullLogger();
+        } else {
+            $this->logger = $logger;
+        }
     }
 
     public function root(string $controllerClass, string $action): void

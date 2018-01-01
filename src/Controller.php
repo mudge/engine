@@ -3,15 +3,20 @@ declare(strict_types=1);
 
 namespace Engine;
 
-use Psr\Log\LoggerInterface;
+use Psr\Log\{LoggerInterface, NullLogger};
 
 abstract class Controller
 {
-    public function __construct(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+    public function __construct(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger = null)
     {
         $this->request = $request;
         $this->response = $response;
-        $this->logger = $logger;
+
+        if ($logger === null) {
+            $this->logger = new NullLogger();
+        } else {
+            $this->logger = $logger;
+        }
 
         $this->session = $request->session();
         $this->params = $request->params();

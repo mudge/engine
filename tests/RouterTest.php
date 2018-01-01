@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Engine;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 
 final class TestController extends Controller
 {
@@ -138,9 +137,7 @@ final class RouterTest extends TestCase
 
     private function buildRouter(): Router
     {
-        $logger = new NullLogger();
-
-        return new Router($logger);
+        return new Router();
     }
 
     private function buildRequest(string $method, string $uri): RequestInterface
@@ -151,8 +148,7 @@ final class RouterTest extends TestCase
     private function buildResponse(): ResponseInterface
     {
         $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(__DIR__ . '/templates'));
-        $logger = new NullLogger();
 
-        return new TestResponse($twig, $logger);
+        return new TestResponse($twig);
     }
 }

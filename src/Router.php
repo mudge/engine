@@ -37,7 +37,7 @@ final class Router
         $this->routes[$method][$path] = [$controllerClass, $action];
     }
 
-    public function route(Request $request, Response $response): void
+    public function route(RequestInterface $request, ResponseInterface $response): void
     {
         $method = $request->method();
         $path = $request->requestPath();

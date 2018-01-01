@@ -7,7 +7,7 @@ use Psr\Log\LoggerInterface;
 
 abstract class Controller
 {
-    public function __construct(Request $request, Response $response, LoggerInterface $logger)
+    public function __construct(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         $this->request = $request;
         $this->response = $response;
@@ -31,6 +31,11 @@ abstract class Controller
     public function redirect(string $location): void
     {
         $this->response->redirect($location);
+    }
+
+    public function header(string $header): void
+    {
+        $this->response->header($header);
     }
 
     public function csrfToken(): string

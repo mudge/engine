@@ -115,6 +115,8 @@ This will generate a project with the following layout in `my-project` (contents
 │   ├── 404.html
 │   ├── base.html
 │   └── index.html
+├── tests
+│   └── HomepageControllerTest.php
 ├── tmp
 └── vendor
 ```
@@ -127,6 +129,12 @@ $ php -S localhost:8080 -t public
 ```
 
 You can then go to http://localhost:8080 in your web browser and see a welcome page from Engine.
+
+You can run the automated tests:
+
+```console
+$ ./vendor/bin/phpunit
+```
 
 ### Controllers
 
